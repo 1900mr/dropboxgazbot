@@ -1,9 +1,10 @@
-import express from 'express'; // استيراد مكتبة Express
-import TelegramBot from 'node-telegram-bot-api';
-import XLSX from 'xlsx';
-import fs from 'fs';
-import { Dropbox } from 'dropbox';
-import fetch from 'isomorphic-fetch'; // إذا كنت تستخدم fetch مع Dropbox
+// استخدام require بدلاً من import للتوافق مع CommonJS
+const express = require('express');  // استيراد مكتبة Express
+const TelegramBot = require('node-telegram-bot-api');
+const XLSX = require('xlsx');
+const fs = require('fs');
+const { Dropbox } = require('dropbox');
+const fetch = require('isomorphic-fetch');  // لاستخدام fetch مع Dropbox
 
 // التوكن الخاص بالبوت من BotFather
 const TELEGRAM_TOKEN = '8026253210:AAEedpGTkUA8GevbVOQhkysAIWz5v5U9ovg';
@@ -20,7 +21,7 @@ const dbx = new Dropbox({ accessToken: DROPBOX_ACCESS_TOKEN, fetch: fetch });
 const app = express();
 
 // إعداد البورت
-const PORT = process.env.PORT || 3000; // استخدام المنفذ من متغير البيئة أو المنفذ الافتراضي 3000
+const PORT = process.env.PORT || 3000;  // استخدام المنفذ من متغير البيئة أو المنفذ الافتراضي 3000
 
 // دالة لتحميل الملف إلى Dropbox
 async function uploadToDropbox(filePath, dropboxPath) {
@@ -76,7 +77,7 @@ bot.on('document', async (msg) => {
 
     fileStream.on('finish', async () => {
         // رفع الملف إلى Dropbox
-        const dropboxPath = `/Apps/gazatest/${fileName}`; // تعديل المسار هنا لرفع الملف إلى /Apps/gazatest
+        const dropboxPath = `/Apps/gazatest/${fileName}`;  // تعديل المسار هنا لرفع الملف إلى /Apps/gazatest
         const dropboxResponse = await uploadToDropbox(filePath, dropboxPath);
 
         if (dropboxResponse) {
@@ -93,9 +94,9 @@ bot.on('document', async (msg) => {
 // معالجة البحث في الملف
 bot.onText(/\/search (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
-    const searchTerm = match[1]; // الكلمة التي سيتم البحث عنها
+    const searchTerm = match[1];  // الكلمة التي سيتم البحث عنها
 
-    const filePath = './example.xlsx'; // افترض أن الملف موجود في الخادم لديك أو Dropbox
+    const filePath = './example.xlsx';  // افترض أن الملف موجود في الخادم لديك أو Dropbox
     
     const results = searchExcel(filePath, searchTerm);
     if (results.length > 0) {
