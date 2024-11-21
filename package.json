@@ -3,7 +3,6 @@
     "version": "1.0.0",
     "description": "بوت تلجرام للبحث عن بيانات من ملف Excel",
     "main": "index.js",
-    "type": "module",
     "scripts": {
       "start": "node index.js"
     },
