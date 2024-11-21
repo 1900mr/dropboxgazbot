@@ -2,7 +2,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import XLSX from 'xlsx';
 import fs from 'fs';
 import { Dropbox } from 'dropbox';
-import fetch from 'isomorphic-fetch'; // لأن Dropbox يعتمد على fetch
+import fetch from 'isomorphic-fetch'; // إذا كنت تستخدم fetch مع Dropbox
 
 // التوكن الخاص بالبوت من BotFather
 const TELEGRAM_TOKEN = '8026253210:AAEedpGTkUA8GevbVOQhkysAIWz5v5U9ovg';
@@ -86,9 +86,6 @@ bot.onText(/\/search (.+)/, (msg, match) => {
 
     const filePath = './example.xlsx'; // افترض أن الملف موجود في الخادم لديك أو Dropbox
     
-    // هنا يمكنك تحميل الملف من Dropbox إذا كان في المجلد
-    // أو يمكنك تحميله محلياً مثل المثال هنا
-
     const results = searchExcel(filePath, searchTerm);
     if (results.length > 0) {
         let resultText = 'النتائج:\n';
