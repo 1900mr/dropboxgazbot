@@ -1,3 +1,4 @@
+import express from 'express'; // استيراد مكتبة Express
 import TelegramBot from 'node-telegram-bot-api';
 import XLSX from 'xlsx';
 import fs from 'fs';
@@ -14,6 +15,12 @@ const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 
 // إعداد اتصال Dropbox
 const dbx = new Dropbox({ accessToken: DROPBOX_ACCESS_TOKEN, fetch: fetch });
+
+// إنشاء خادم Express
+const app = express();
+
+// إعداد البورت
+const PORT = process.env.PORT || 3000; // استخدام المنفذ من متغير البيئة أو المنفذ الافتراضي 3000
 
 // دالة لتحميل الملف إلى Dropbox
 async function uploadToDropbox(filePath, dropboxPath) {
@@ -105,4 +112,9 @@ bot.onText(/\/search (.+)/, (msg, match) => {
 // استعراض الأخطاء
 bot.on('polling_error', (error) => {
     console.log(error);
+});
+
+// تشغيل خادم Express
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
