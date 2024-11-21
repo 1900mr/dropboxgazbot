@@ -5,9 +5,9 @@ const Dropbox = require('dropbox').Dropbox;
 const fetch = require('isomorphic-fetch');
 
 // التوكن الخاص بالبوت من BotFather
-const TELEGRAM_TOKEN = 'YOUR_BOT_TOKEN';
+const TELEGRAM_TOKEN = '8026253210:AAEedpGTkUA8GevbVOQhkysAIWz5v5U9ovg';
 // توكن Dropbox
-const DROPBOX_ACCESS_TOKEN = '8026253210:AAEedpGTkUA8GevbVOQhkysAIWz5v5U9ovg';
+const DROPBOX_ACCESS_TOKEN = 'sl.CBITRY3JwaiwBuKYFLL0vrKK9Vamj9rIw9Mee3q4Q02rWMgJHIvNoax9rawbTWpGbtwVf5ZLE4Q3f_sAhlvCyUCGAZYNpdQlIX0vNc1F5SqRD8Vruf-2zM-tQlgqB0NPdY5eerWmgY6G';
 
 // إعداد البوت
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
