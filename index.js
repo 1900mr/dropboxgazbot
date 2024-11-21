@@ -1,10 +1,8 @@
-// استخدام require بدلاً من import للتوافق مع CommonJS
-const express = require('express');  // استيراد مكتبة Express
-const TelegramBot = require('node-telegram-bot-api');
-const XLSX = require('xlsx');
-const fs = require('fs');
-const { Dropbox } = require('dropbox');
-const fetch = require('isomorphic-fetch');  // لاستخدام fetch مع Dropbox
+import TelegramBot from 'node-telegram-bot-api';
+import XLSX from 'xlsx';
+import fs from 'fs';
+import { Dropbox } from 'dropbox';
+import fetch from 'isomorphic-fetch'; // إذا كنت تستخدم fetch مع Dropbox
 
 // التوكن الخاص بالبوت من BotFather
 const TELEGRAM_TOKEN = '8026253210:AAEedpGTkUA8GevbVOQhkysAIWz5v5U9ovg';
@@ -16,12 +14,6 @@ const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 
 // إعداد اتصال Dropbox
 const dbx = new Dropbox({ accessToken: DROPBOX_ACCESS_TOKEN, fetch: fetch });
-
-// إنشاء خادم Express
-const app = express();
-
-// إعداد البورت
-const PORT = process.env.PORT || 3000;  // استخدام المنفذ من متغير البيئة أو المنفذ الافتراضي 3000
 
 // دالة لتحميل الملف إلى Dropbox
 async function uploadToDropbox(filePath, dropboxPath) {
@@ -67,55 +59,60 @@ bot.on('document', async (msg) => {
     const fileId = file.file_id;
     const fileName = file.file_name;
 
-    // تحميل الملف من تيليجرام
-    const fileUrl = await bot.getFileLink(fileId);
-    const filePath = `./${fileName}`;
-    
-    const fileStream = fs.createWriteStream(filePath);
-    const response = await fetch(fileUrl);
-    response.body.pipe(fileStream);
+    try {
+        // تحميل الملف من تيليجرام
+        const fileUrl = await bot.getFileLink(fileId);
+        const filePath = `./${fileName}`;
 
-    fileStream.on('finish', async () => {
-        // رفع الملف إلى Dropbox
-        const dropboxPath = `/Apps/gazatest/${fileName}`;  // تعديل المسار هنا لرفع الملف إلى /Apps/gazatest
-        const dropboxResponse = await uploadToDropbox(filePath, dropboxPath);
+        const fileStream = fs.createWriteStream(filePath);
+        const response = await fetch(fileUrl);
+        response.body.pipe(fileStream);
 
-        if (dropboxResponse) {
-            bot.sendMessage(chatId, `تم رفع الملف بنجاح إلى Dropbox: ${dropboxPath}`);
-        } else {
-            bot.sendMessage(chatId, 'حدث خطأ أثناء رفع الملف إلى Dropbox.');
-        }
+        fileStream.on('finish', async () => {
+            // رفع الملف إلى Dropbox
+            const dropboxPath = `/Apps/gazatest/${fileName}`;
+            const dropboxResponse = await uploadToDropbox(filePath, dropboxPath);
 
-        // تنظيف الملفات المحلية
-        fs.unlinkSync(filePath);
-    });
+            if (dropboxResponse) {
+                bot.sendMessage(chatId, `تم رفع الملف بنجاح إلى Dropbox: ${dropboxPath}`);
+            } else {
+                bot.sendMessage(chatId, 'حدث خطأ أثناء رفع الملف إلى Dropbox.');
+            }
+
+            // تنظيف الملفات المحلية
+            await fs.promises.unlink(filePath);
+        });
+    } catch (error) {
+        console.error('Error handling file:', error);
+        bot.sendMessage(chatId, 'حدث خطأ أثناء التعامل مع الملف.');
+    }
 });
 
 // معالجة البحث في الملف
 bot.onText(/\/search (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
-    const searchTerm = match[1];  // الكلمة التي سيتم البحث عنها
+    const searchTerm = match[1]; // الكلمة التي سيتم البحث عنها
 
-    const filePath = './example.xlsx';  // افترض أن الملف موجود في الخادم لديك أو Dropbox
-    
-    const results = searchExcel(filePath, searchTerm);
-    if (results.length > 0) {
-        let resultText = 'النتائج:\n';
-        results.forEach((row, index) => {
-            resultText += `نتيجة ${index + 1}: ${JSON.stringify(row)}\n`;
-        });
-        bot.sendMessage(chatId, resultText);
-    } else {
-        bot.sendMessage(chatId, 'لم يتم العثور على نتائج.');
+    const filePath = './example.xlsx'; // افترض أن الملف موجود في الخادم لديك أو Dropbox
+
+    try {
+        const results = searchExcel(filePath, searchTerm);
+        if (results.length > 0) {
+            let resultText = 'النتائج:\n';
+            results.forEach((row, index) => {
+                resultText += `نتيجة ${index + 1}: ${JSON.stringify(row)}\n`;
+            });
+            bot.sendMessage(chatId, resultText);
+        } else {
+            bot.sendMessage(chatId, 'لم يتم العثور على نتائج.');
+        }
+    } catch (error) {
+        console.error('Error searching in the file:', error);
+        bot.sendMessage(chatId, 'حدث خطأ أثناء البحث في الملف.');
     }
 });
 
 // استعراض الأخطاء
 bot.on('polling_error', (error) => {
     console.log(error);
-});
-
-// تشغيل خادم Express
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
 });
