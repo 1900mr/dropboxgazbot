@@ -1,8 +1,8 @@
-const TelegramBot = require('node-telegram-bot-api');
-const XLSX = require('xlsx');
-const fs = require('fs');
-const Dropbox = require('dropbox').Dropbox;
-const fetch = require('isomorphic-fetch');
+import TelegramBot from 'node-telegram-bot-api';
+import XLSX from 'xlsx';
+import fs from 'fs';
+import { Dropbox } from 'dropbox';
+import fetch from 'isomorphic-fetch'; // إذا كنت تستخدم fetch مع Dropbox
 
 // التوكن الخاص بالبوت من BotFather
 const TELEGRAM_TOKEN = '8026253210:AAEedpGTkUA8GevbVOQhkysAIWz5v5U9ovg';
@@ -30,9 +30,12 @@ async function uploadToDropbox(filePath, dropboxPath) {
 // دالة للبحث في ملف Excel
 function searchExcel(filePath, searchTerm) {
     const workbook = XLSX.readFile(filePath);
-    const sheet = workbook.Sheets[workbook.SheetNames[0]]; // افترض أن البيانات في الورقة الأولى
+    const sheetName = workbook.SheetNames[0]; // اختيار الورقة الأولى
+    const sheet = workbook.Sheets[sheetName];
+
+    // تحويل الورقة إلى JSON
     const jsonData = XLSX.utils.sheet_to_json(sheet);
-    
+
     return jsonData.filter(row => {
         return Object.values(row).some(value => {
             return String(value).toLowerCase().includes(searchTerm.toLowerCase());
