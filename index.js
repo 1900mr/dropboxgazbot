@@ -2,7 +2,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import XLSX from 'xlsx';
 import fs from 'fs';
 import { Dropbox } from 'dropbox';
-import fetch from 'isomorphic-fetch'; // إذا كنت تستخدم fetch مع Dropbox
+import fetch from 'isomorphic-fetch'; // لأن Dropbox يعتمد على fetch
 
 // التوكن الخاص بالبوت من BotFather
 const TELEGRAM_TOKEN = '8026253210:AAEedpGTkUA8GevbVOQhkysAIWz5v5U9ovg';
