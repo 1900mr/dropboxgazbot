@@ -19,7 +19,11 @@ const dbx = new Dropbox({ accessToken: DROPBOX_ACCESS_TOKEN, fetch: fetch });
 async function uploadToDropbox(filePath, dropboxPath) {
     const fileContents = fs.readFileSync(filePath);
     try {
-        const response = await dbx.filesUpload({ path: dropboxPath, contents: fileContents, mode: { '.tag': 'overwrite' } });
+        const response = await dbx.filesUpload({
+            path: dropboxPath, // المسار في Dropbox
+            contents: fileContents,
+            mode: { '.tag': 'overwrite' } // إذا كان الملف موجودًا، يتم استبداله
+        });
         return response;
     } catch (error) {
         console.error('Error uploading to Dropbox:', error);
@@ -65,7 +69,7 @@ bot.on('document', async (msg) => {
 
     fileStream.on('finish', async () => {
         // رفع الملف إلى Dropbox
-        const dropboxPath = `/your_folder/${fileName}`;
+        const dropboxPath = `/Apps/gazatest/${fileName}`; // تعديل المسار هنا لرفع الملف إلى /Apps/gazatest
         const dropboxResponse = await uploadToDropbox(filePath, dropboxPath);
 
         if (dropboxResponse) {
